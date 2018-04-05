@@ -4,7 +4,7 @@ install:
 	./setup.py install
 uninstall:
 	-pip3 uninstall -y genice
-distclean:
+clean:
 	-rm *.scad *.yap @*
 	-rm -rf build dist
 	-rm -rf graphstat.egg-info

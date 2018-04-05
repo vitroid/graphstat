@@ -16,3 +16,4 @@ user	4m28.961s
 sys	0m3.903s
 
 Access to local MySQL is VERY slow...
+It is more than 300 times slower than sqlite3. Ridiculous.
