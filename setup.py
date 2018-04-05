@@ -28,6 +28,6 @@ setup(name='graphstat',
       license='MIT',
       packages=['graphstat',
                 ],
-      install_requires=['numpy', 'networkx>=2', 'mysql-connector-python-rf',],
+      install_requires=['numpy', 'networkx>=2', 'mysqlclient',],
       )
 

@@ -6,7 +6,7 @@ import networkx as nx
 from urllib.parse import urlparse
 
 # pip install mysql-connector-python-rf
-import mysql.connector
+import MySQLdb
 from graphstat import graphstat_sqlite3
 from graphstat import encode_graph, decode_graph, matrix_sort, sorteddm, unittest
 
@@ -17,7 +17,7 @@ import logging
 class GraphStat(graphstat_sqlite3.GraphStat):
     def __init__(self, url, create=False):
         parsed = urlparse(url)
-        self.conn = mysql.connector.connect(
+        self.conn = MySQLdb.connect(
             host = parsed.hostname or 'localhost',
             port = parsed.port or 3306,
             user = parsed.username or 'root',
@@ -25,12 +25,12 @@ class GraphStat(graphstat_sqlite3.GraphStat):
             database = parsed.path[1:],
         )
         if create:
-            c = self.conn.cursor(buffered=True)
+            c = self.conn.cursor()
             c.execute('''CREATE TABLE graphs (id integer primary key auto_increment not null, sdm text, graph text)''')
             self.conn.commit()
     def get(self, id):
         now = time.time()
-        cur = self.conn.cursor(buffered=True)
+        cur = self.conn.cursor()
         result = cur.execute("SELECT graph FROM graphs WHERE id=?", (id,))
         duration = time.time() - now
         logging.getLogger().debug("  {0} sec SELECT@get()".format(duration))
@@ -40,7 +40,7 @@ class GraphStat(graphstat_sqlite3.GraphStat):
         self.lastsdm  = sorteddm(g)
         # print(self.lastsdm)
         now = time.time()
-        cur = self.conn.cursor(buffered=True)
+        cur = self.conn.cursor()
         cur.execute("SELECT id, graph FROM graphs WHERE sdm=%s", (self.lastsdm,))
         duration = time.time() - now
         logging.getLogger().debug("  {0} sec SELECT@query_id()".format(duration))
@@ -55,7 +55,7 @@ class GraphStat(graphstat_sqlite3.GraphStat):
     def register(self):
         assert self.lastid == -1
         now = time.time()
-        cur = self.conn.cursor(buffered=True)
+        cur = self.conn.cursor()
         cur.execute("INSERT INTO graphs (sdm, graph) VALUES (%s, %s)",
                     (self.lastsdm, encode_graph(self.lastgraph)))
         self.conn.commit()
