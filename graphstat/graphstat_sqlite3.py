@@ -26,6 +26,7 @@ class GraphStat():
         logging.getLogger().debug("  {0} sec SELECT@get()".format(duration))
         return [decode_graph(row[0]) for row in cur]
     def query_id(self, g):
+        logger = logging.getLogger()
         self.lastgraph = g
         self.lastsdm  = sorteddm(g)
         # print(self.lastsdm)
@@ -33,13 +34,19 @@ class GraphStat():
         cur = self.conn.cursor()
         cur.execute("SELECT id, graph FROM graphs WHERE sdm=?", (self.lastsdm,))
         duration = time.time() - now
-        logging.getLogger().debug("  {0} sec SELECT@query_id()".format(duration))
+        logger.debug("  {0} sec SELECT@query_id()".format(duration))
+        conflict = 0
         for row in cur:
             id, g_enc = row
             g_dec = decode_graph(g_enc)
             if nx.is_isomorphic(g_dec,g):
                 self.lastid = id
                 return id
+            else:
+                # different graph has the same sdm
+                conflict += 1
+        if conflict:
+            logger.info("{0} Confliction detected.".format(conflict))
         self.lastid = -1
         return -1
     def register(self):
