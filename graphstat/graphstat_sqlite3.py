@@ -62,6 +62,8 @@ class GraphStat():
 
 if __name__  == "__main__":
     # gdb = GraphStat('example.db', create=True)
+    logging.basicConfig(level=logging.DEBUG,
+                        format="%(asctime)s %(levelname)s %(message)s")
     gdb = GraphStat('example.db')
     unittest(gdb)
 
