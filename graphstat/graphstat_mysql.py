@@ -26,12 +26,12 @@ class GraphStat(graphstat_sqlite3.GraphStat):
         )
         if create:
             c = self.conn.cursor()
-            c.execute('''CREATE TABLE graphs (id integer primary key auto_increment not null, sdm text, graph text)''')
+            c.execute('''CREATE TABLE graphs2 (id integer primary key auto_increment not null unique, sdm char(32), graph text, index(sdm))''')
             self.conn.commit()
     def get(self, id):
         now = time.time()
         cur = self.conn.cursor()
-        result = cur.execute("SELECT graph FROM graphs WHERE id=?", (id,))
+        result = cur.execute("SELECT graph FROM graphs2 WHERE id=?", (id,))
         duration = time.time() - now
         logging.getLogger().debug("  {0} sec SELECT@get()".format(duration))
         return [decode_graph(row) for row in cur]
@@ -42,7 +42,7 @@ class GraphStat(graphstat_sqlite3.GraphStat):
         # print(self.lastsdm)
         now = time.time()
         cur = self.conn.cursor()
-        cur.execute("SELECT id, graph FROM graphs WHERE sdm=%s", (self.lastsdm,))
+        cur.execute("SELECT id, graph FROM graphs2 WHERE sdm=%s", (self.lastsdm,))
         duration = time.time() - now
         logger.debug("  {0} sec SELECT@query_id()".format(duration))
         conflict = 0
@@ -63,7 +63,7 @@ class GraphStat(graphstat_sqlite3.GraphStat):
         assert self.lastid == -1
         now = time.time()
         cur = self.conn.cursor()
-        cur.execute("INSERT INTO graphs (sdm, graph) VALUES (%s, %s)",
+        cur.execute("INSERT INTO graphs2 (sdm, graph) VALUES (%s, %s)",
                     (self.lastsdm, encode_graph(self.lastgraph)))
         self.conn.commit()
         duration = time.time() - now
@@ -82,5 +82,8 @@ if __name__  == "__main__":
     # /usr/local/Cellar/mysql/5.6.21/homebrew.mxcl.mysql.plist
     # /usr/local/Cellar/mysql/5.6.21/my.cnf
     # the client IP must be in /etc/hosts. #damn
+    logging.basicConfig(level=logging.DEBUG,
+                        format="%(asctime)s %(levelname)s %(message)s")
+    # gdb = GraphStat('http://graphdb:public0@vitroid-black.local:3306/voronoi', create=True)
     gdb = GraphStat('http://graphdb:public0@vitroid-black.local:3306/example')
     unittest(gdb)

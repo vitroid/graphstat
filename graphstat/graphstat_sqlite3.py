@@ -14,7 +14,7 @@ class GraphStat():
         self.conn = sqlite3.connect(filename)
         if create:
             c = self.conn.cursor()
-            c.execute('''CREATE TABLE graphs (id integer primary key, sdm text, graph text)''')
+            c.execute('''CREATE TABLE graphs (id integer primary key unique, sdm char(32), graph text, index(sdm))''')
             self.conn.commit()
     def __done__(self):
         self.conn.close()
