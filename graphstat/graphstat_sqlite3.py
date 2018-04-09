@@ -14,7 +14,7 @@ class GraphStat():
         self.conn = sqlite3.connect(filename)
         if create:
             c = self.conn.cursor()
-            c.execute('''CREATE TABLE graphs (id integer primary key, sdm text, graph text)''')
+            c.execute('''CREATE TABLE graphs (id integer primary key unique, sdm char(32), graph text, index(sdm))''')
             self.conn.commit()
     def __done__(self):
         self.conn.close()
@@ -62,6 +62,8 @@ class GraphStat():
 
 if __name__  == "__main__":
     # gdb = GraphStat('example.db', create=True)
+    logging.basicConfig(level=logging.DEBUG,
+                        format="%(asctime)s %(levelname)s %(message)s")
     gdb = GraphStat('example.db')
     unittest(gdb)
 

@@ -9,6 +9,8 @@ __version__ = "0.1"
 
 import networkx as nx
 import numpy as np
+import logging
+import hashlib
 
 def encode_graph(g):
     return ",".join([line for line in nx.generate_edgelist(g, data=False)])
@@ -27,7 +29,10 @@ def matrix_sort(m):
 
 
 def sorteddm(g):
-    return matrix_sort(np.array(nx.floyd_warshall_numpy(g)))
+    logger = logging.getLogger()
+    result = hashlib.md5(matrix_sort(np.array(nx.floyd_warshall_numpy(g))).encode('utf-8')).hexdigest()
+    logger.debug(result)
+    return result
 
 
 #local, volatile set of graphs.
@@ -42,7 +47,10 @@ class GraphStat():
         self.lasthash = matrix_sort(np.array(nx.floyd_warshall_numpy(a)))
         if self.lasthash in self.graphhashes:
             for g_id in self.graphhashes[self.lasthash]:
-                # graphs[hash] is an array of tuples containing the graph and its ID.
+                # 既存の構造の場合、isomorphismが必要になり30%処理が余分にかかる。
+                # 実際にはこれまでconflictは一度も起きていないので、
+                # 確認する必要はないかもしれないが、30%のコストで
+                # 安全になるなら当面はこのままでいこう。
                 if nx.is_isomorphic(self.graphs[g_id],a):
                     self.lastid = g_id
                     return g_id

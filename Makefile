@@ -4,6 +4,9 @@ install:
 	./setup.py install
 uninstall:
 	-pip3 uninstall -y genice
+test:
+	python graphstat/graphstat_sqlite3.py
+	python graphstat/graphstat_sqlite3.py
 clean:
 	-rm *.scad *.yap @*
 	-rm -rf build dist
