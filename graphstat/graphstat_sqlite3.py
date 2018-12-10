@@ -8,13 +8,17 @@ from graphstat import encode_graph, decode_graph, matrix_sort, sorteddm, unittes
 # debug
 import time
 import logging
+import os
+import sys
 
 class GraphStat():
-    def __init__(self, filename, create=False):
+    def __init__(self, filename, create_if_nonexist=True):
+        exist = os.path.exists(filename)
         self.conn = sqlite3.connect(filename)
-        if create:
+        if not exist and create_if_nonexist:
             c = self.conn.cursor()
-            c.execute('''CREATE TABLE graphs (id integer primary key unique, sdm char(32), graph text, index(sdm))''')
+            c.execute('''CREATE TABLE graphs (id integer primary key unique, sdm char(32), graph text)''')
+            c.execute('''CREATE INDEX graphindex on graphs(sdm)''')
             self.conn.commit()
     def __done__(self):
         self.conn.close()
@@ -61,10 +65,9 @@ class GraphStat():
         return cur.lastrowid
 
 if __name__  == "__main__":
-    # gdb = GraphStat('example.db', create=True)
+    gdb = GraphStat('example.db', create_if_nonexist=True)
     logging.basicConfig(level=logging.DEBUG,
                         format="%(asctime)s %(levelname)s %(message)s")
-    gdb = GraphStat('example.db')
     unittest(gdb)
 
 # time genice CRN2  -f voro2 
