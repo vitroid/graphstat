@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 from setuptools import setup
 import os
@@ -28,6 +28,6 @@ setup(name='graphstat',
       license='MIT',
       packages=['graphstat',
                 ],
-      install_requires=['numpy', 'networkx>=2', 'mysqlclient',],
+      install_requires=['numpy', 'networkx>=2',],
       )
 
