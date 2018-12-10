@@ -4,6 +4,10 @@ install:
 	./setup.py install
 uninstall:
 	-pip3 uninstall -y genice
+pypi: check
+	./setup.py sdist bdist_wheel upload
+check:
+	./setup.py check
 test:
 	python graphstat/graphstat_sqlite3.py
 	python graphstat/graphstat_sqlite3.py

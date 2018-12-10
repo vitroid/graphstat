@@ -43,8 +43,9 @@ class GraphStat():
         # storage
         self.graphs     = []
     def query_id(self, a):
+        assert nx.is_connected(a)
         self.lastgraph = a
-        self.lasthash = matrix_sort(np.array(nx.floyd_warshall_numpy(a)))
+        self.lasthash = sorteddm(a)
         if self.lasthash in self.graphhashes:
             for g_id in self.graphhashes[self.lasthash]:
                 # 既存の構造の場合、isomorphismが必要になり30%処理が余分にかかる。
