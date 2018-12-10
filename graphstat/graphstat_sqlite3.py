@@ -30,6 +30,7 @@ class GraphStat():
         logging.getLogger().debug("  {0} sec SELECT@get()".format(duration))
         return [decode_graph(row[0]) for row in cur]
     def query_id(self, g):
+        assert nx.is_connected(a)
         logger = logging.getLogger()
         self.lastgraph = g
         self.lastsdm  = sorteddm(g)
